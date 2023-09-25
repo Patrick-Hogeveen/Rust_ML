@@ -1,0 +1,26 @@
+[package]
+name = "burn_app"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+ndarray = ["burn/ndarray"]
+tch-cpu = ["burn/tch"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies.burn-tch]
+package = "burn-tch"
+git = "https://github.com/burn-rs/burn.git"
+optional = true
+
+[dependencies]
+burn = { git = "https://github.com/burn-rs/burn.git", features = ["train", "tch"] }
+#usless?
+
+serde = {version = "1.0.171", features = ["std", "derive"]}
+
+# Serialization
+
+log = "0.4.20"
+
