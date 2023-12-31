@@ -1,5 +1,6 @@
-use crate::data::MNISTBatcher;
+use crate::data::{ArtBatcher, ArtDataset};
 use crate::model::Model;
+
 
 use burn::module::Module;
 use burn::optim::decay::WeightDecayConfig;
@@ -18,7 +19,7 @@ use burn::{
 static ARTIFACT_DIR: &str = "/tmp/burn-example-mnist";
 
 #[derive(Config)]
-pub struct MnistTrainingConfig {
+pub struct ArtTrainingConfig {
     #[config(default = 10)]
     pub num_epochs: usize,
 
@@ -37,23 +38,23 @@ pub struct MnistTrainingConfig {
 pub fn run<B: ADBackend>(device: B::Device) {
     // Config
     let config_optimizer = AdamConfig::new().with_weight_decay(Some(WeightDecayConfig::new(5e-5)));
-    let config = MnistTrainingConfig::new(config_optimizer);
+    let config = ArtTrainingConfig::new(config_optimizer);
     B::seed(config.seed);
 
     // Data
-    let batcher_train = MNISTBatcher::<B>::new(device.clone());
-    let batcher_valid = MNISTBatcher::<B::InnerBackend>::new(device.clone());
+    let batcher_train = ArtBatcher::<B>::new(device.clone());
+    let batcher_valid = ArtBatcher::<B::InnerBackend>::new(device.clone());
 
     let dataloader_train = DataLoaderBuilder::new(batcher_train)
         .batch_size(config.batch_size)
         .shuffle(config.seed)
         .num_workers(config.num_workers)
-        .build(MNISTDataset::train());
+        .build(ArtDataset::train());
     let dataloader_test = DataLoaderBuilder::new(batcher_valid)
         .batch_size(config.batch_size)
         .shuffle(config.seed)
         .num_workers(config.num_workers)
-        .build(MNISTDataset::test());
+        .build(ArtDataset::test());
 
     // Model
     let learner = LearnerBuilder::new(ARTIFACT_DIR)

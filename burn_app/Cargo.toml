@@ -16,7 +16,8 @@ optional = true
 
 [dependencies]
 burn = { git = "https://github.com/burn-rs/burn.git", features = ["train", "tch"] }
-#usless?
+derive-new = { version = "0.5.9", default-features = false }
+
 
 serde = {version = "1.0.171", features = ["std", "derive"]}
 

@@ -13,4 +13,13 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
-mnist/
+/mnist
+/burn_app
+checkpoint/
+train/
+valid/
+**/experiment*
+**/model.bin*
+burn_app/metadata.json
+burn_app/model.bin
+burn_app/model.bin
