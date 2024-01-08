@@ -18,6 +18,7 @@ Cargo.lock
 checkpoint/
 train/
 valid/
+test/
 **/experiment*
 **/model.bin*
 burn_app/metadata.json
