@@ -62,11 +62,13 @@ impl MNISTDataset {
 }
 
 pub fn load_data(dataset_name: &str) -> Result<Vec<MNISTItem>, std::io::Error> {
-    
-    let filename = format!("/tmp/emnist/MNIST/raw/{}-labels-idx1-ubyte.gz", dataset_name);
+    //Clean this up!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    let filename = format!("./emnist-gzip/gzip/emnist-digits-train-labels-idx1-ubyte.gz");
     println!("name: {}", filename);
     let label_data = &MnistData::new(&(File::open(filename))?)?;
-    let filename = format!("/tmp/emnist/MNIST/raw/{}-images-idx3-ubyte.gz", dataset_name);
+    println!("name:");
+    let filename = format!("./emnist-gzip/gzip/emnist-digits-train-images-idx3-ubyte.gz");
+    println!("name:");
     let images_data = &MnistData::new(&(File::open(filename))?)?;
     let mut images: Vec<[[f32; WIDTH]; HEIGHT]> = Vec::new();
     let image_shape = (images_data.sizes[1] * images_data.sizes[2]) as usize;
@@ -95,6 +97,6 @@ pub fn load_data(dataset_name: &str) -> Result<Vec<MNISTItem>, std::io::Error> {
             label: classification,
         })
     }
-
+    
     Ok(ret)
 }

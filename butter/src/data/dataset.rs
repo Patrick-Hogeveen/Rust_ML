@@ -1,15 +1,18 @@
 use burn::data::dataset::Dataset; 
 use derive_new::new;
+use image;
+use image::GenericImageView;
 use std::fs::{self, File};
-use crate::data::mnist_extract::MnistData;
+use std::path::Path;
 
 
-const WIDTH: usize = 28;
-const HEIGHT: usize = 28;
+
+const WIDTH: usize = 224;
+const HEIGHT: usize = 224;
 
 #[derive(new, Copy, Clone, Debug)]
 pub struct ButterItem {
-    pub image: [[f32; WIDTH]; HEIGHT],
+    pub image: [[[f32; WIDTH]; HEIGHT]; 3],
 
     pub label: usize,
 }
@@ -54,7 +57,7 @@ impl ButterDataset {
     }
 
     pub fn new(data_file: &str, split: &str, batch_size: usize) -> Self {
-        let contents = load_data(data_file).unwrap(); 
+        let contents = load_data(data_file, split).unwrap(); 
         Self::new_with_contents(contents, split, batch_size)
     }
 
@@ -63,12 +66,51 @@ impl ButterDataset {
 
 pub fn load_data(dataset_name: &str, split: &str) -> Result<Vec<ButterItem>, std::io::Error> {
     
-    let filename = format!("/tmp/emnist/MNIST/raw/{}-labels-idx1-ubyte.gz", dataset_name);
-    println!("name: {}", filename);
-    let label_data = &ButterData::new(&(File::open(filename))?)?;
-    let filename = format!("/tmp/emnist/MNIST/raw/{}-images-idx3-ubyte.gz", dataset_name);
-    let images_data = &ButterData::new(&(File::open(filename))?)?;
-    let mut images: Vec<[[f32; WIDTH]; HEIGHT]> = Vec::new();
+    let path = format!("./archive(1)/{}", split);
+    print!("load_data: {:?}\n", path);
+    let mut ret: Vec<ButterItem> = Vec::new();
+    let paths = fs::read_dir(path.clone()).unwrap();
+
+    
+    let mut labelindex = 0;
+    for entry in paths {
+        let entry = entry?;
+        let picpaths = fs::read_dir(entry.path()).unwrap();
+        println!("{:?}\n", entry.path());
+
+        for pic in picpaths{
+            let pic = pic?;
+
+            //let mut butter: ButterItem = ButterItem::new();
+            //butter.label = labelindex;
+            let mut img = image::open(pic.path()).unwrap();
+
+            let mut butterarray = [[[0f32; WIDTH]; HEIGHT]; 3];
+            //println!("{:?}", pic.path());
+            for (i, pix) in img.pixels().enumerate() {
+                /*println!("{}",pix.2[0]);
+                println!("{}",pix.2[1]);
+                println!("{}",pix.2[2]);*/
+                let x = i % WIDTH;
+                let y = i / HEIGHT;
+                butterarray[0][x][y] = pix.2[0] as f32/255.0;
+                butterarray[1][x][y] = pix.2[1] as f32/255.0;
+                butterarray[2][x][y] = pix.2[2] as f32/255.0;
+            }
+
+
+            ret.push( ButterItem {
+                image: butterarray,
+                label: labelindex,
+            })
+        }
+
+        labelindex+=1;
+
+        
+    }
+    /* 
+    let mut images: Vec<[[[f32; WIDTH]; HEIGHT]; 3]> = Vec::new();
     let image_shape = (images_data.sizes[1] * images_data.sizes[2]) as usize;
 
     for i in 0..images_data.sizes[0] as usize {
@@ -95,6 +137,6 @@ pub fn load_data(dataset_name: &str, split: &str) -> Result<Vec<ButterItem>, std
             label: classification,
         })
     }
-
+    */
     Ok(ret)
 }
